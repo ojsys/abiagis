@@ -9,7 +9,7 @@ def login(request):
         form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request)
+            auth_login(request, user)
             return redirect('index')
             
     else:
