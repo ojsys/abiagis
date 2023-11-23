@@ -14,6 +14,22 @@ class BackCopy(models.Model):
     prepared_date = models.DateField(null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.abia_gis_fileno + ' ' + self.name_of_allotee 
+
+
+
+class Lines(models.Model):
+    objectid = models.CharField(max_length=100)
+    parcelid = models.CharField(max_length=100)
+    line_length = models.CharField(max_length=100)
+    sequence = models.CharField(max_length=50)
+    internal_angle = models.CharField(max_length=30)
+    from_beacon_no = models.CharField(max_length=100)
+    to_beacon_no = models.CharField(max_length=100)
+    direction = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.parcelid
+
 
