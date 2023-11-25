@@ -22,7 +22,7 @@ class Parcel(models.Model):
 
 class Lines(models.Model):
     objectid = models.CharField(max_length=100)
-    parcelid = models.ForeignKey(unique=True)
+    parcelid = models.ForeignKey(Parcel, on_delete=models.CASCADE)
     line_length = models.CharField(max_length=100)
     sequence = models.CharField(max_length=50)
     internal_angle = models.CharField(max_length=30)
@@ -34,3 +34,12 @@ class Lines(models.Model):
         return self.parcelid
 
 
+class GeneratedPdf(models.Model):
+    FileNo = models.ForeignKey(Parcel, on_delete=models.CASCADE)
+    is_Generated = models.BooleanField(default=False)
+    Generated_by = models.CharField(max_length=100)
+    Generated_date = models.DateField(null=True, blank=True)
+
+
+    def __str__(self):
+        return self.FileNo
