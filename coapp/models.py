@@ -1,6 +1,7 @@
 from django.db import models
 
-class BackCopy(models.Model):
+class Parcel(models.Model):
+    object_id = models.CharField(max_length=100)
     abia_gis_fileno = models.CharField(max_length=100, null=True, blank=True)
     name_of_allotee = models.CharField(max_length=100)
     name_of_surveyor = models.CharField(max_length=100, null=True, blank=True)
@@ -21,7 +22,7 @@ class BackCopy(models.Model):
 
 class Lines(models.Model):
     objectid = models.CharField(max_length=100)
-    parcelid = models.CharField(max_length=100)
+    parcelid = models.ForeignKey(unique=True)
     line_length = models.CharField(max_length=100)
     sequence = models.CharField(max_length=50)
     internal_angle = models.CharField(max_length=30)
