@@ -3,7 +3,7 @@ from django.db import models
 class Parcel(models.Model):
     OBJECTID = models.CharField(max_length=100)
     FileNumber = models.CharField(max_length=100, null=True, blank=True)
-    Name_of_Allotee = models.CharField(max_length=100)
+    Name_of_Allottee = models.CharField(max_length=100, null=True, blank=True)
     Name_of_Surveyor = models.CharField(max_length=100, null=True, blank=True)
     Landuse = models.CharField(max_length=100, null=True, blank=True)
     LGA = models.CharField(max_length=100, null=True, blank=True)
@@ -24,16 +24,16 @@ class Parcel(models.Model):
 
 
 class Lines(models.Model):
-    OBJECTID = models.CharField(max_length=100)
+    OBJECTID = models.CharField(max_length=100, null=True, blank=True)
     ParcelID = models.ForeignKey(Parcel, on_delete=models.CASCADE)
-    Length = models.CharField(max_length=100)
-    Sequence = models.CharField(max_length=50)
-    InternalAngle = models.CharField(max_length=30)
-    FromBeaconNo = models.CharField(max_length=100)
-    ToBeaconNo = models.CharField(max_length=100)
-    Direction = models.CharField(max_length=100)
-    Northings = models.CharField(max_length=100)
-    Eastings = models.CharField(max_length=100)
+    Length = models.CharField(max_length=100, null=True, blank=True)
+    Sequence = models.CharField(max_length=50, null=True, blank=True)
+    InternalAngle = models.CharField(max_length=30, null=True, blank=True)
+    FromBeaconNo = models.CharField(max_length=100, null=True, blank=True)
+    ToBeaconNo = models.CharField(max_length=100, null=True, blank=True)
+    Direction = models.CharField(max_length=100, null=True, blank=True)
+    Northings = models.CharField(max_length=100, null=True, blank=True)
+    Eastings = models.CharField(max_length=100, null=True, blank=True)
     
     def __str__(self):
         return self.parcelid

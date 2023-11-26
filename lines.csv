@@ -1,4 +1,4 @@
-OBJECTID,ParcelID,Sequence,InternalAngle,FromBeaconNo,ToBeaconNo,Length,Direction,Northings,Eastings
+OBJECTID,ParcelID_id,Sequence,InternalAngle,FromBeaconNo,ToBeaconNo,Length,Direction,Northings,Eastings
 150048,129380,1,-90.15,ISU 0617,PBO 5461,42.20m,269 48',611196.878,333206.229
 150049,129380,2,-89.833333,PBO 5461,PBO 6964,18.28m,359 64',611196.498,333164.031
 150050,129380,3,-90.15,PBO 6964,ISU 0616,42.20m,89 50',611214.787,333163.919
