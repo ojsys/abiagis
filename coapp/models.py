@@ -1,19 +1,22 @@
 from django.db import models
 
 class Parcel(models.Model):
-    object_id = models.CharField(max_length=100)
-    abia_gis_fileno = models.CharField(max_length=100, null=True, blank=True)
-    name_of_allotee = models.CharField(max_length=100)
-    name_of_surveyor = models.CharField(max_length=100, null=True, blank=True)
-    landuse = models.CharField(max_length=100, null=True, blank=True)
-    spacial_lga = models.CharField(max_length=100, null=True, blank=True)
-    lga = models.CharField(max_length=100, null=True, blank=True)
-    location = models.CharField(max_length=100, null=True, blank=True)
-    plan_no = models.CharField(max_length=100, null=True, blank=True)
-    plot_no = models.CharField(max_length=100, null=True, blank=True)
-    prepared_by = models.CharField(max_length=100, null=True, blank=True)
-    prepared_date = models.DateField(null=True, blank=True)
-    state = models.CharField(max_length=100, null=True, blank=True)
+    OBJECTID = models.CharField(max_length=100)
+    FileNumber = models.CharField(max_length=100, null=True, blank=True)
+    Name_of_Allotee = models.CharField(max_length=100)
+    Name_of_Surveyor = models.CharField(max_length=100, null=True, blank=True)
+    Landuse = models.CharField(max_length=100, null=True, blank=True)
+    LGA = models.CharField(max_length=100, null=True, blank=True)
+    District = models.CharField(max_length=100, null=True, blank=True)
+    Address = models.CharField(max_length=100, null=True, blank=True)
+    Plan_No = models.CharField(max_length=100, null=True, blank=True)
+    Location = models.CharField(max_length=100, null=True, blank=True)
+    Plot_No = models.CharField(max_length=100, null=True, blank=True)
+    State = models.CharField(max_length=100, null=True, blank=True)
+    R_Particulars = models.CharField(max_length=100, null=True, blank=True)
+    Starting_Pillar_No = models.CharField(max_length=100, null=True, blank=True)
+    StatedArea = models.CharField(max_length=100, null=True, blank=True)
+    Picture = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.abia_gis_fileno + ' ' + self.name_of_allotee 
@@ -21,14 +24,16 @@ class Parcel(models.Model):
 
 
 class Lines(models.Model):
-    objectid = models.CharField(max_length=100)
-    parcelid = models.ForeignKey(Parcel, on_delete=models.CASCADE)
-    line_length = models.CharField(max_length=100)
-    sequence = models.CharField(max_length=50)
-    internal_angle = models.CharField(max_length=30)
-    from_beacon_no = models.CharField(max_length=100)
-    to_beacon_no = models.CharField(max_length=100)
-    direction = models.CharField(max_length=100)
+    OBJECTID = models.CharField(max_length=100)
+    ParcelID = models.ForeignKey(Parcel, on_delete=models.CASCADE)
+    Length = models.CharField(max_length=100)
+    Sequence = models.CharField(max_length=50)
+    InternalAngle = models.CharField(max_length=30)
+    FromBeaconNo = models.CharField(max_length=100)
+    ToBeaconNo = models.CharField(max_length=100)
+    Direction = models.CharField(max_length=100)
+    Northings = models.CharField(max_length=100)
+    Eastings = models.CharField(max_length=100)
     
     def __str__(self):
         return self.parcelid
