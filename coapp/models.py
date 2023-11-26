@@ -34,7 +34,7 @@ class Lines(models.Model):
         return self.parcelid
 
 
-class GeneratedPdf(models.Model):
+class GeneratedBackCopy(models.Model):
     FileNo = models.ForeignKey(Parcel, on_delete=models.CASCADE)
     is_Generated = models.BooleanField(default=False)
     Generated_by = models.CharField(max_length=100)
