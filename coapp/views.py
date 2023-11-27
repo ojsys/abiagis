@@ -69,12 +69,20 @@ def index(request):
 
 
 def search_page(request):
-    return render(request, 'coapp/search_page.html', {})
+    if request.method == 'POST':
+        searched = request.POST['q']
+        return render(request, 'coapp/search_page.html', {'searched': searched})
+    else:
+        return render(request, 'coapp/search_page.html', {})
 
-def search_parcel(request):
-
-    return render(request, 'coapp/search_parcel.html', {})
-
+def view_parcel(request):
+    query = request.GET.get('q')
+    if not query:
+        query = ''        
+    parcel = Parcel.objects.filter(Q(FileNumber__icontains=query))
+    return render(request, 'coapp/view_parcel.html', {'parcel':parcel})
+    
+    
 def preview_page(request):
     
     return render(request, 'coapp/preview.html', {})
