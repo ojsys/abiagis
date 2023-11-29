@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from .models import Parcel, Lines
@@ -8,6 +8,8 @@ from django.http import FileResponse
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
+from .forms import ParcelSearchForm
+from django.core.paginator import Paginator
 
 
 User = get_user_model()
@@ -69,15 +71,40 @@ def index(request):
 
 
 def search_page(request):
-    if request.method == 'POST':
-        searched = request.POST["q"]
-        return render(request, 'coapp/search_page.html', {'searched': searched})
-    else:
-        return render(request, 'coapp/search_page.html', {})
+    # file_number = request.GET.get('file_number')    
+    # paginate = Paginator(Parcel.objects.all(), 1)
+    # page = request.GET.get('page')
+    # parcels = paginate.get_page(page)
+    # lands = Parcel.objects.all()
+    # if file_number:
+    #     lands = lands.filter(FileNumber__icontains=file_number)
+    # context = {
+    #     'form': ParcelSearchForm(),
+    #     'parcels': parcels,
+    #     'lines': Lines.objects.all(),
+    #     'lands': lands
+    # }    
 
-def view_parcel(request):
-    
-    return render(request, 'coapp/view_parcel.html', {'parcel':parcel})
+    form = ParcelSearchForm(request.GET)
+    parcels = []
+    lines = []
+
+    if form.is_valid():
+        file_number = form.cleaned_data['file_number']
+        parcels = Parcel.objects.filter(FileNumber__icontains=file_number)
+        lines = Lines.objects.all()
+
+    context = {
+        'form':form,
+        'parcels': parcels,
+        'lines':lines
+    }
+    return render(request, 'coapp/search_page.html', context)
+
+def view_parcel(request, parcel_id):
+    parcel_detail = get_object_or_404(Parcel, pk=parcel_id)
+    lines = get_object_or_404(Lines, pk=parcel_id)
+    return render(request, 'coapp/view_parcel.html', {'parcel_detail':parcel_detail, 'lines':lines})
     
     
 def preview_page(request):

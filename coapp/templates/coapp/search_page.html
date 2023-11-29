@@ -18,7 +18,7 @@
             <div class="container">
               <div class="row justify-content-center">
                 <div class="col-lg-5 text-center mx-auto">
-                  <h1 class="text-white mb-2 mt-5">Welcome!</h1>
+                  <h1 class="text-black mb-2 mt-5">SEARCH PARCEL</h1>
                   <p class="text-lead text-white"></p>
                 </div>
 
@@ -37,10 +37,10 @@
                   {% endif %}
                   
                   <div class="card-body">
-                    <form role="form text-left" method='post' action="{% url 'search_page' %}">
+                    <form role="form text-left" method='GET' action="{% url 'search_page' %}">
                         {% csrf_token %}
                       <div class="text-center">
-                        <input type="search" class="form-control" name="q" placeholder="Enter Parcel File Number">
+                        {{ form.as_p }}
                       </div>
                       <div class="text-center">
                         <input type="submit" value="Find Parcel" class="btn btn-success w-100 my-4 mb-2">
@@ -51,15 +51,74 @@
                 </div>
               </div>
             </div>
+            <div class="row mt-5">
+                <h2 class="mt-4">Parcel</h2>
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">File Number</th>
+                        <th scope="col">Name of Allottee</th>
+                        <th scope="col">LGA</th>
+                        <th scope="col">Survey Plan Number</th>
+                        <th scope="col">Reference Pillar No.</th>
+                        <th scope="col">R_Particulars</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for parcel in parcels %}
+                        
+                      <tr>
+                        <td>{{ parcel.FileNumber }}</td>
+                        <td>{{ parcel.Name_of_Allottee}}</td>
+                        <td>{{ parcel.LGA}}</td>
+                        <td>{{ parcel.Plan_No }}</td>
+                        <td>{{ parcel.Starting_Pillar_No}}</td>
+                        <td>{{ parcel.R_Particulars }}</td>
+                        <td><a href="{% url 'view_parcel' parcel.id %}">View Parcel</a></td>
+                            
+                      </tr>
+                      {% endfor %}  
+                      
+                    </tbody>
+                </table>
+                <h2 class="mt-4">Lines</h2>
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Sequence</th>
+                        <th scope="col">FromBeacon</th>
+                        <th scope="col">Direction</th>
+                        <th scope="col">Length</th>
+                        <th scope="col">ToBeacon</th>
+                        
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in lines %}
+                            
+                      <tr>
+                            <td>{{ line.Sequence }}</td>
+                            <td>{{ line.FromBeaconNo }}</td>
+                            <td>{{ line.Direction }}</td>
+                            <td>{{ line.Length }}</td>
+                            <td>{{ line.ToBeaconNo}}</td>
+                        
+                            
+                        {% endfor %}
+                      </tr>
+                      
+                    </tbody>
+                  </table>
+
+                    
+                    
+            </div>
+            
           </div>
         </section>
 
-        {% if searched %}
-
-      <h1>You Searched for {{ searched }}</h1>
-    {% else %}
-      <h1>You forgot to search</h1>
-    {% endif %}
+        
 
 
       </main>
