@@ -13,8 +13,41 @@
 
       <h1>You Searched for {{ parcel_detail.FileNumber }}</h1>
 
-      <p>Name of Allottee: {{ parcel_detail.Name_of_Allottee }}</p>
-      <p>LGA: {{ parcel_detail.LGA }}</p>
+      <h2>Name of Allottee: {{ parcel_detail.Name_of_Allottee }}</h2>
+      <h2>LGA: {{ parcel_detail.LGA }}</h2>
+      <h2>Plan No: {{ parcel_detail.Plan_No }}</h2>
+      <h2>Starting Pillar No: {{ parcel_detail.Starting_Pillar_No }}</h2>
+      <h2>R Particulars: {{ parcel_detail.R_Particulars }}</h2>
+      <h2>PercelID: {{ parcel_detail.OBJECTID }}</h2>
+
+        <h2 class="mt-4">BEACON READINGS</h2>
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Sequence</th>
+                        <th scope="col">FromBeacon</th>
+                        <th scope="col">Direction</th>
+                        <th scope="col">Length</th>
+                        <th scope="col">ToBeacon</th>
+                        
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in lines %}
+                            
+                      <tr>
+                            <td>{{ line.Sequence }}</td>
+                            <td>{{ line.FromBeaconNo }}</td>
+                            <td>{{ line.Direction }}</td>
+                            <td>{{ line.Length }}</td>
+                            <td>{{ line.ToBeaconNo}}</td>
+                        
+                            
+                        {% endfor %}
+                      </tr>
+                      
+                    </tbody>
+                  </table>
     {% else %}
       <h1>Parcel Not Found</h1>
     {% endif %}

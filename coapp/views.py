@@ -92,7 +92,9 @@ def search_page(request):
     if form.is_valid():
         file_number = form.cleaned_data['file_number']
         parcels = Parcel.objects.filter(FileNumber__icontains=file_number)
-        lines = Lines.objects.all()
+        parcel_line_id = parcels.values_list('OBJECTID', flat=True)
+        lines = Lines.objects.filter(ParcelID_id__in=parcel_line_id)
+        
 
     context = {
         'form':form,
@@ -103,7 +105,8 @@ def search_page(request):
 
 def view_parcel(request, parcel_id):
     parcel_detail = get_object_or_404(Parcel, pk=parcel_id)
-    lines = get_object_or_404(Lines, pk=parcel_id)
+    parcels = Parcel.objects.filter(OBJECTID=parcel_detail)
+    lines = Lines.objects.filter(ParcelID_id__in=parcels.values_list('OBJECTID', flat=True))
     return render(request, 'coapp/view_parcel.html', {'parcel_detail':parcel_detail, 'lines':lines})
     
     

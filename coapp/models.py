@@ -1,6 +1,7 @@
 from django.db import models
 
 class Parcel(models.Model):
+    id = models.IntegerField(primary_key=True)
     OBJECTID = models.CharField(max_length=100)
     FileNumber = models.CharField(max_length=100, null=True, blank=True)
     Name_of_Allottee = models.CharField(max_length=100, null=True, blank=True)
@@ -19,11 +20,12 @@ class Parcel(models.Model):
     Picture = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return self.abia_gis_fileno + ' ' + self.name_of_allotee 
+        return self.FileNumber + ' ' + self.Name_of_Allottee 
 
 
 
 class Lines(models.Model):
+    id = models.IntegerField(primary_key=True)
     OBJECTID = models.CharField(max_length=100, null=True, blank=True)
     ParcelID = models.ForeignKey(Parcel, on_delete=models.CASCADE)
     Length = models.CharField(max_length=100, null=True, blank=True)
@@ -36,15 +38,15 @@ class Lines(models.Model):
     Eastings = models.CharField(max_length=100, null=True, blank=True)
     
     def __str__(self):
-        return self.parcelid
+        return self.ParcelID
 
 
-class GeneratedBackCopy(models.Model):
-    FileNo = models.ForeignKey(Parcel, on_delete=models.CASCADE)
-    is_Generated = models.BooleanField(default=False)
-    Generated_by = models.CharField(max_length=100)
-    Generated_date = models.DateField(null=True, blank=True)
+# class GeneratedBackCopy(models.Model):
+#     FileNo = models.ForeignKey(Parcel, on_delete=models.CASCADE)
+#     is_Generated = models.BooleanField(default=False)
+#     Generated_by = models.CharField(max_length=100)
+#     Generated_date = models.DateField(null=True, blank=True)
 
 
-    def __str__(self):
-        return self.FileNo
+#     def __str__(self):
+#         return self.FileNo
