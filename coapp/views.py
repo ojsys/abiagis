@@ -10,9 +10,43 @@ from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 from .forms import ParcelSearchForm
 from django.core.paginator import Paginator
+from datetime import datetime
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+
+
+
 
 
 User = get_user_model()
+
+
+def render_pdf_view(request, parcel_id):
+    template_path = 'coapp/generatepdf.html'
+
+    parcels = Parcel.objects.filter(id=parcel_id)
+    parcel_line_id = parcels.values_list('OBJECTID', flat=True)
+    lines = Lines.objects.filter(ParcelID_id__in=parcel_line_id)
+    
+
+    context = {'parcels': parcels, 'lines':lines, 'time': datetime.now()}
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(
+       html, dest=response)
+    # if error then show some funny view
+    if pisa_status.err:
+       return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response
+
+
 
 @login_required
 def index(request): 
@@ -110,11 +144,7 @@ def view_parcel(request, parcel_id):
     return render(request, 'coapp/view_parcel.html', {'parcel_detail':parcel_detail, 'lines':lines})
     
     
-def preview_page(request):
-    
-    return render(request, 'coapp/preview.html', {})
-
-def generate_pdf(request):
+def generate_pdf(request, parcel_id):
     # Create a file-like buffer to receive PDF data.
     buffer = io.BytesIO()
 
@@ -125,15 +155,26 @@ def generate_pdf(request):
     textobj.setTextOrigin(inch, inch)
     textobj.setFont('Helvetica', 14)
     
-    # Draw things on the PDF. Here's where the PDF generation happens.
-    # See the ReportLab documentation for the full list of functionality.
-    text = 'Hello world.'
-    textobj.textLine(text)
-    # Close the PDF object cleanly, and we're done.
+    
+    parcels = Parcel.objects.all()
+    lines = Lines.objects.all()
+    for parcel in parcels:
+        if parcel.id == parcel_id:
+            lines = Lines.objects.filter(ParcelID_id=parcel.OBJECTID)
+            textobj.textLine(parcel.FileNumber)
+            textobj.textLine(parcel.Name_of_Allottee)
+            textobj.textLine(parcel.LGA)
+            textobj.textLine(parcel.Plan_No)
+            textobj.textLine(parcel.Starting_Pillar_No)
+            textobj.textLine(parcel.R_Particulars)
+            
+
+
+    p.drawText(textobj)    # Close the PDF object cleanly, and we're done.
     p.showPage()
     p.save() 
 
     # FileResponse sets the Content-Disposition header so that browsers
     # present the option to save the file.
     buffer.seek(0)
-    return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
+    return FileResponse(buffer, as_attachment=True, filename='/Users/mac/Documents/ABIAProject/hello.pdf')

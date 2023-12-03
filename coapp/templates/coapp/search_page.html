@@ -75,7 +75,7 @@
                         <td>{{ parcel.Plan_No }}</td>
                         <td>{{ parcel.Starting_Pillar_No}}</td>
                         <td>{{ parcel.R_Particulars }}</td>
-                        <td><a href="{% url 'view_parcel' parcel.id %}">View Parcel</a></td>
+                        <td><a href="{% url 'render_pdf' parcel.id %}">View Parcel</a></td>
                             
                       </tr>
                       {% endfor %}  
