@@ -36,6 +36,8 @@ class Lines(models.Model):
     Direction = models.CharField(max_length=100, null=True, blank=True)
     Northings = models.CharField(max_length=100, null=True, blank=True)
     Eastings = models.CharField(max_length=100, null=True, blank=True)
+    Dir1 = models.CharField(max_length=4, null=True, blank=True)
+    Dir2 = models.CharField(max_length=4, null=True, blank=True)
     
     def __str__(self):
         return self.ParcelID

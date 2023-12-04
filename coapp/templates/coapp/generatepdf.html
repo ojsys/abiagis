@@ -8,24 +8,23 @@
     <title>{{ parcel.FileNumber }}</title>
     {% endfor %}
 
-    <style>
+    <style type="text/css">
         img {zoom: 30%; }
-        @page {
-        size: a4 portrait;
-        @frame header_frame {           /* Static Frame */
-            -pdf-frame-content: header_content;
-            left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+        .fixed-space{
+            position: absolute !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            width: 200px;
         }
-        @frame content_frame {          /* Content Frame */
-            left: 50pt; width: 512pt; top: 90pt; height: 632pt;
-        }
-        @frame footer_frame {           /* Another static Frame */
-            -pdf-frame-content: footer_content;
-            left: 50pt; width: 512pt; top: 772pt; height: 20pt;
-        }
-    }
+        @font-face {
+            font-family: 'Playbill';
+            src: url("{% static '/fonts/Roboto/Playbill.ttf' %}") format("truetype");
+            font-weight: 400;
+            font-style: italic;
+        } 
+        
     </style>
-
+                
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 </head>
 <body>
@@ -35,20 +34,17 @@
         
         <h1 style="font-weight: lighter; font-size: 1.4em;">FILENO: <span style="font-weight: bolder;">{{ parcel.FileNumber }}</span></h1>
         <h1 style="font-weight: lighter; font-size: 1.4em;">PLOT DESCRIPTION: <span style="font-weight: bolder; text-transform: uppercase;">PLOT {{ parcel.Plot_No }} {{ parcel.Address }}</span></h1>
-        <h1 style="font-weight: lighter; font-size: 1.4em;">LGA: <span style="font-weight: bolder; text-transform: uppercase;">{{ parcel.LGA }}</span></h1>
-        <h1 style="font-weight: lighter; font-size: 1.4em;">SURVEY PLAN NUMBER: <span style="font-weight: bolder;">{{ parcel.Plan_No }}</span></h1>
+        <h1 style="font-weight: lighter; font-size: 1.4em; font-family: 'Playbill';">LGA: <span style="font-weight: bolder; text-transform: uppercase;">{{ parcel.LGA }}</span></h1>
+        <h1 style="font-weight: lighter; font-size: 1.4em; font-family: 'Playbill';">SURVEY PLAN NUMBER: <span style="font-weight: bolder;">{{ parcel.Plan_No }}</span></h1>
             {% for line in lines %}
                 {% if line.FromBeaconNo == parcel.Starting_Pillar_No %}
         <h1 style="font-weight: lighter; font-size: 1.4em;">REFERENCE PILLAR NO/ COORDINATES: <span style="font-weight: bolder;">{{ parcel.Starting_Pillar_No }} ({{ line.Eastings}}E AND {{line.Northings}}N)</span></h1>
                 {% endif %}
             {% endfor %}
         {% endfor %}
-        <p style="display:block; margin-bottom: -1em; font-size: 2px; text-align: center; font-style: italic;">ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA GISAB IAGISA BIAG IS ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA GISAB IAGISA BIAG IS ABIAG ISAB IA GISA BIAGISA
-            ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA GISAB IAGISA BIAG IS ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA </p>
-    
-        <p style="display:block; margin-bottom: -1em; font-size: large;">A. O. IVONYE</p>
-        <p style="margin-left:-1em; margin-top: -1em;">SURVEYOR GENERAL</p>
-    
+        <p style="display:block; margin-bottom: -1em;letter-spacing: 0.1px; font-family: 'Playbill' !important; font-size: 0.5px; text-align: center; font-style: italic;">ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA GISAB IAGISA BIAG IS ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA GISAB IAGISA BIAG IS ABIAG ISAB IA GISA BIAGISA ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA GISAB IAGISA BIAG IS ABIA GISAB IAGISA BIAG IS ABIA GISAB IAGISA BIAG IS ABIA GISAB IAGISA BIAG IS ABIA GISAB IA GISA BIAG IS ABIA GISAB IA GISA BIAGIS ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISAB IAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA GISAB IAGISA BIAG IS ABIA GISAB IAGISA BIAG IS ABIA GISAB IAGISA BIAG IS ABIA GISAB IAGISA BIAG IS ABIA GISAB IA GISA BIAG IS ABIA GISAB IA GISA BIAGIS ABIAG ISAB IS 
+        <p style="margin-left:-0.5em; margin-bottom: -1em; font-weight: bold; font-size: 1.2em ">A. O. IVONYE</p>
+        <p style="margin-left:-1.5em; margin-top: -1em;">SURVEYOR GENERAL</p>
         <div class="container">
             <div class="row">
                 <div class="col-4"></div>
@@ -65,7 +61,7 @@
             <div class="row justify-content-center">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
-                    <table class="table table-sm table-borderless align-middle me-2" cellspacing="0">
+                    <table style="width: 500pt; display: block; margin-left: 50pt;" class="table table-sm table-borderless align-middle mx-2" cellspacing="0">
                         <thead>
                           <tr> 
                             <td>No</td>
@@ -78,11 +74,11 @@
                         <tbody>
                             {% for line in lines %}
                             <tr>
-                                <td>{{ line.Sequence }}</td>
-                                <td>{{ line.FromBeaconNo }}</td>
-                                <td>{{ line.Direction }}</td>
-                                <td>{{ line.Length }}</td>
-                                <td>{{ line.ToBeaconNo}}</td>
+                                <td style="width: 70px;">{{ line.Sequence }}</td>
+                                <td style="width: 200px;">{{ line.FromBeaconNo }}</td>
+                                <td style="width: 200px;">{{ line.Dir1|floatformat:"0" }}&deg; {{ line.Dir2|floatformat:"0" }}'</td>
+                                <td style="width: 200px;">{{ line.Length }}</td>
+                                <td style="width: 200px;">{{ line.ToBeaconNo}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -91,12 +87,15 @@
                 <div class="col-md-2"></div>
             </div>
         </div>
+        <div style="display: flex;">
+            <p style="display:block; text-align: center; margin-top: 155pt; font-size:7px; width: 70%;">
+                GENERATED BY: ABIAGIS @ {{ time }} & GENERATED BY GIS
+            </p>
+        </div>
+        <img class="fixed-space" src="http://localhost:8000{% static 'images/logo1.png' %}" alt="">
     </div>
 
-    <footer id="footer_content">
-        <p>GENERATED BY: ABIAGIS @ {{ time }} & GENERATED BY GIS</p>
-        <img style="width: 150px; position: absolute; bottom: 8px; right: 16px;" src="http://localhost:8000{% static 'images/logo1.png' %}" alt="">
-    </footer>
+    
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

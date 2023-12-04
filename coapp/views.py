@@ -28,9 +28,10 @@ def render_pdf_view(request, parcel_id):
     parcels = Parcel.objects.filter(id=parcel_id)
     parcel_line_id = parcels.values_list('OBJECTID', flat=True)
     lines = Lines.objects.filter(ParcelID_id__in=parcel_line_id)
+    time = datetime.now().strftime("%I:%M:%S %p, %A, %B %d, %Y")
     
 
-    context = {'parcels': parcels, 'lines':lines, 'time': datetime.now()}
+    context = {'parcels': parcels, 'lines':lines, 'time': time}
     # Create a Django response object, and specify content_type as pdf
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="report.pdf"'
@@ -145,36 +146,29 @@ def view_parcel(request, parcel_id):
     
     
 def generate_pdf(request, parcel_id):
-    # Create a file-like buffer to receive PDF data.
-    buffer = io.BytesIO()
+    parcels = Parcel.objects.filter(id=parcel_id)
+    parcel_line_id = parcels.values_list('OBJECTID', flat=True)
+    lines = Lines.objects.filter(ParcelID_id__in=parcel_line_id)
+    time = datetime.now().strftime("%I:%M:%S %p, %A, %B %d, %Y")
 
-    # Create the PDF object, using the buffer as its "file."
-    p = canvas.Canvas(buffer, pagesize=letter, bottomup=0)
+    # Create a PDF document using reportlab
+    pdf_canvas = canvas.Canvas("output_reportlab.pdf")
 
-    textobj = p.beginText()
-    textobj.setTextOrigin(inch, inch)
-    textobj.setFont('Helvetica', 14)
+    # Set the font and font size
+    #pdf_canvas.setFont("Helvetica", 14)
     
-    
-    parcels = Parcel.objects.all()
-    lines = Lines.objects.all()
-    for parcel in parcels:
-        if parcel.id == parcel_id:
-            lines = Lines.objects.filter(ParcelID_id=parcel.OBJECTID)
-            textobj.textLine(parcel.FileNumber)
-            textobj.textLine(parcel.Name_of_Allottee)
-            textobj.textLine(parcel.LGA)
-            textobj.textLine(parcel.Plan_No)
-            textobj.textLine(parcel.Starting_Pillar_No)
-            textobj.textLine(parcel.R_Particulars)
-            
 
+    for parcel in parcels:    # Add data using reportlab
+        pdf_canvas.drawString(30, 800, "FILENO: " + parcel.FileNumber)
+        pdf_canvas.drawString(30, 770, "PLOT DESCRIPTION: " + parcel.Plot_No + " " + parcel.Address)
+        pdf_canvas.drawString(30, 740, "LGA: " + parcel.LGA)
+        pdf_canvas.drawString(30, 710, "SURVEY PLAN NUMBER: " + parcel.Plan_No)
+        for line in lines:
+            if line.FromBeaconNo == parcel.Starting_Pillar_No:
+                pdf_canvas.drawString(30, 680, "REFERENCE PILLAR NO/ COORDINATES: " + str(parcel.Starting_Pillar_No) + " " + "("+str(line.Eastings) + "E " + str(line.Northings)+"N)")
 
-    p.drawText(textobj)    # Close the PDF object cleanly, and we're done.
-    p.showPage()
-    p.save() 
+        pdf_canvas.drawCentredString(30, 650, "ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA GISAB IAGISA BIAG IS ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA GISAB IAGISA BIAG IS ABIAG ISAB IA GISA BIAGISA \
+            ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA GISAB IAGISA BIAG IS ABIAG ISAB IA GISA BIAGISA BIAG ISAB IA GISA BIAGISA BIAG ISABIA GISAB IAGISA BIAG ISABIA")
+    pdf_canvas.save()
 
-    # FileResponse sets the Content-Disposition header so that browsers
-    # present the option to save the file.
-    buffer.seek(0)
-    return FileResponse(buffer, as_attachment=True, filename='/Users/mac/Documents/ABIAProject/hello.pdf')
+    return FileResponse(open("output_reportlab.pdf", "rb"), as_attachment=True, filename="output_reportlab.pdf")
