@@ -11,8 +11,7 @@ from django.template.loader import get_template
 from django.template import Context
 
 # reportlab
-from reportlab.pdfgen.canvas import Canvas
-from reportlab.lib.units import inch
+from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -20,6 +19,7 @@ from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Image, Tabl
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.units import inch
+from reportlab.lib import colors
 # ---------
 from .forms import ParcelSearchForm
 from django.core.paginator import Paginator
@@ -176,7 +176,7 @@ class MyPDFView(View):
         buffer = BytesIO()
 
         # Create the PDF object using the buffer
-        pdf = Canvas(buffer, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=10, bottomMargin=0.5, allowSplitting=1, title="Parcel Fabric")
+        pdf = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=10, bottomMargin=0.5, allowSplitting=1, title="Parcel Fabric")
         #pdf = Canvas(buffer, pagesize=A4)
         # Create a list to store PDF elements
         elements = []
@@ -188,7 +188,7 @@ class MyPDFView(View):
         styles.add(ParagraphStyle(name='BodyText_Survey2', fontName='Helvetica', fontSize=12, alignment=TA_LEFT, leading=16))
         styles.add(ParagraphStyle(name='BodyText_Image', fontName='Helvetica', fontSize=12, alignment=TA_CENTER, leading=16))
         styles.add(ParagraphStyle(name='BodyText_Footer', fontName='Helvetica', fontSize=12, alignment=TA_CENTER, leading=16))
-        styles.add(ParagraphStyle(name='BodyText_FileNumber', fontName='Helvetica', fontSize=12, alignment=TA_CENTER, leading=16, angle=90))
+        styles.add(ParagraphStyle(name='BodyText_FileNumber', fontName='Helvetica', fontSize=12, alignment=TA_LEFT))
         # Iterate through the database records and add them to the PDF
         for parcel in parcels:
             # Customize this line based on your model fields
@@ -230,29 +230,69 @@ class MyPDFView(View):
             #----
             surveyor = "<font name = 'Helvetica' size = '11'><b>N. K. C. ABARAONYE</b></font>"
             sur_style = styles['BodyText_Survey']
-            sur_style.leftIndent = -5
+            sur_style.leftIndent = -7
             surveyor_data = Paragraph(surveyor, sur_style)
             elements.append(surveyor_data)
             elements.append(Spacer(1, -5))
             #----
             surveyor_title = "<font name = 'Helvetica' size = '9'>SURVEYOR GENERAL</font>"
             sur_style2 = styles['BodyText_Survey2']
-            sur_style2.leftIndent = -15
+            sur_style2.leftIndent = 0
             surveyor_title_data = Paragraph(surveyor_title, sur_style2)
             elements.append(surveyor_title_data)
+            elements.append(Spacer(1, -30))
 
             #----
-            file_number1 = f"<font name='Helvetica' size='11'><b>{parcel.FileNumber}</b></font>"
-            file_number1_style = styles['BodyText_FileNumber']
-            file_number1_style.leftIndent = -320           
-            file_number1_data = Paragraph(file_number1, file_number1_style)
-            elements.append(file_number1_data)
-            elements.append(Spacer(1, -5))            
+            class RotatePara(Paragraph):
+
+                def wrap(self, availWidth, availHeight):
+                    height, width = Paragraph.wrap(self, 10, 50)
+                    return width, height
+                
+                def draw(self):
+                    self.canv.rotate(90)
+                    Paragraph.draw(self)
+
+            file_number = f"<font name='Helvetica' size='11'><b>{parcel.FileNumber} <br/> {parcel.R_Particulars}</b></font>"
+            file_number_style = styles['BodyText_FileNumber']
+            file_number_style.leftIndent = -250
+            #file_number_style.borderColor = '#ff00ff'
+            #file_number_style.borderWidth = 1
+            #file_number_style.borderPadding = (50, 0, 130)
+            file_number_style.leading = 10
+            
+            
+            file_number_data = RotatePara(file_number, file_number_style)
+            elements.append(Spacer(10, 20))
+            elements.append(file_number_data)
+            
+            
             #----
-            image_path = f'static/images/{parcel.FileNumber}.png'
-            img = Image(image_path, width=250, height=330)
-            elements.append(img)
-            elements.append(Spacer(1, -5))
+            # file_number1 = f"<font name='Helvetica' size='11'><b>{parcel.FileNumber}</b></font>"
+            # file_number1_style = styles['BodyText_FileNumber']
+            # file_number1_style.leftIndent = -320           
+            # file_number1_data = Paragraph(file_number1, file_number1_style)
+            # elements.append(file_number1_data)
+            # elements.append(Spacer(1, -5))            
+            #----
+            
+
+
+
+            ################################ FILE IMAGE ################################
+            image_path = f'static/images/{parcel.FileNumber.replace(":", "~")}.png'
+            if image_path:
+                img = Image(image_path, width=250, height=330)
+                elements.append(img)
+                elements.append(Spacer(1, -5))
+            elif FileExistsError:
+                img = Image('static/images/NoImage.png', width=250, height=330)
+                errormsg = Paragraph("Please check the matching file Number in the Images Folder!")
+                elements.append(errormsg)
+                elements.append(img)
+                elements.append(Spacer(1, -5))
+            ################################END IMAGE################################
+
 
             beacon_text = "<u>BEACON READINGS</u>"
             beacon_style = styles['Heading4']
@@ -267,7 +307,7 @@ class MyPDFView(View):
             table_data = [['No', 'FromBeacon', 'Direction', 'Length', 'ToBeacon']]  # Header row
             for line in lines:
                 # Customize this line based on your model fields
-                table_data.append([line.Sequence, line.FromBeaconNo, (str(int(line.Dir1))+u"\N{DEGREE SIGN}" + " " + str(int(line.Dir2)))+"'", line.Length, line.ToBeaconNo])
+                table_data.append([line.Sequence, line.FromBeaconNo, line.Direction, line.Length, line.ToBeaconNo])
 
             # Define the table style
             table_style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), '#ffffff'),
@@ -310,14 +350,15 @@ class MyPDFView(View):
         # Set the response content type
         response = HttpResponse(content_type='application/pdf')
         # Set the content disposition for downloading
-        response['Content-Disposition'] = 'attachment; filename="data_from_database.pdf"'
+        response['Content-Disposition'] = f'attachment; filename="{parcel.FileNumber}.pdf"'
         # Write the PDF to the response
         response.write(buffer.getvalue())
 
         return response
     
     def add_fixed_frame(self, canvas, doc):
-        # Define the dimensions and position of the fixed frame (bottom right corner)
+        
+        # the dimensions and position of the fixed frame (bottom right corner)
         frame_width = 100
         frame_height = 50
         frame_x = doc.width - frame_width
