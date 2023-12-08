@@ -188,7 +188,7 @@ class MyPDFView(View):
         styles.add(ParagraphStyle(name='BodyText_Survey2', fontName='Helvetica', fontSize=12, alignment=TA_LEFT, leading=16))
         styles.add(ParagraphStyle(name='BodyText_Image', fontName='Helvetica', fontSize=12, alignment=TA_CENTER, leading=16))
         styles.add(ParagraphStyle(name='BodyText_Footer', fontName='Helvetica', fontSize=12, alignment=TA_CENTER, leading=16))
-        styles.add(ParagraphStyle(name='BodyText_FileNumber', fontName='Helvetica', fontSize=12, alignment=TA_LEFT))
+        styles.add(ParagraphStyle(name='BodyText_FileNumber', fontName='Helvetica', fontSize=12, alignment=TA_CENTER))
         # Iterate through the database records and add them to the PDF
         for parcel in parcels:
             # Customize this line based on your model fields
@@ -251,38 +251,29 @@ class MyPDFView(View):
                 
                 def draw(self):
                     self.canv.rotate(90)
+                    self.canv.drawString(50, 500, f"{parcel.FileNumber}")
                     Paragraph.draw(self)
 
             file_number = f"<font name='Helvetica' size='11'><b>{parcel.FileNumber} <br/> {parcel.R_Particulars}</b></font>"
             file_number_style = styles['BodyText_FileNumber']
-            file_number_style.leftIndent = -250
+            file_number_style.leftIndent = -530
             #file_number_style.borderColor = '#ff00ff'
             #file_number_style.borderWidth = 1
             #file_number_style.borderPadding = (50, 0, 130)
             file_number_style.leading = 10
             
-            
-            file_number_data = RotatePara(file_number, file_number_style)
+            file_number_data = RotatePara(file_number, file_number_style)            
             elements.append(Spacer(10, 20))
             elements.append(file_number_data)
             
             
-            #----
-            # file_number1 = f"<font name='Helvetica' size='11'><b>{parcel.FileNumber}</b></font>"
-            # file_number1_style = styles['BodyText_FileNumber']
-            # file_number1_style.leftIndent = -320           
-            # file_number1_data = Paragraph(file_number1, file_number1_style)
-            # elements.append(file_number1_data)
-            # elements.append(Spacer(1, -5))            
-            #----
             
-
-
-
             ################################ FILE IMAGE ################################
             image_path = f'static/images/{parcel.FileNumber.replace(":", "~")}.png'
             if image_path:
+                
                 img = Image(image_path, width=250, height=330)
+                
                 elements.append(img)
                 elements.append(Spacer(1, -5))
             elif FileExistsError:
@@ -340,12 +331,19 @@ class MyPDFView(View):
             footer_data = Paragraph(footer, footer_style)
             elements.append(footer_data)
             
-          
-            
+            def rotate_text(canvas, text, style, x, y, angle):
+                canvas.saveState()
+                canvas.rotate(angle)
+                canvas.setFont(style.fontName, style.fontSize)
+                canvas.drawString(x, y, text)
+                canvas.restoreState()      
+                
 
+            texttorotate = f"{parcel.FileNumber}"
+        
         # Build the PDF document
         #pdf.save()
-        pdf.build(elements)
+        pdf.build(elements, onFirstPage=lambda canvas, doc: rotate_text(canvas, texttorotate, styles['Normal'], 50, 50, 90))
 
         # Set the response content type
         response = HttpResponse(content_type='application/pdf')
@@ -356,23 +354,4 @@ class MyPDFView(View):
 
         return response
     
-    def add_fixed_frame(self, canvas, doc):
-        
-        # the dimensions and position of the fixed frame (bottom right corner)
-        frame_width = 100
-        frame_height = 50
-        frame_x = doc.width - frame_width
-        frame_y = 20
-
-        # Create a frame and draw a border around it
-        frame = Frame(frame_x, frame_y, frame_width, frame_height)
-        frame.drawBoundary(canvas)
-
-        # Add content to the fixed frame (e.g., logo)
-        logo_path = 'static/images/logo1.png'  # Replace with the actual path to your logo image
-        logo_width = frame_width - 10  # Adjust the width of the logo
-        logo_height = frame_height - 10  # Adjust the height of the logo
-
-        canvas.drawInlineImage(logo_path, frame_x + 5, frame_y + 5, width=logo_width, height=logo_height)
     
-        
