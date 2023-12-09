@@ -346,11 +346,45 @@ class MyPDFView(View):
         #pdf.save()
         pdf.build(elements, onFirstPage=lambda canvas, doc: rotate_text(canvas, texttorotate, styles['Normal'], 50, 50, 90))
 
-        pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Abia_North"
+        if parcel.LGA == "Aba North":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Aba_North"
+        elif parcel.LGA == "Aba South":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Aba_South"
+        elif parcel.LGA == "Arochukwu":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu"
+        elif parcel.LGA == "Bende":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Bende"
+        elif parcel.LGA == "Ikwuano":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano"
+        elif parcel.LGA == "Isiala Ngwa North":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North"
+        elif parcel.LGA == "Isiala Ngwa South":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South"
+        elif parcel.LGA == "Isuikwuato":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato"
+        elif parcel.LGA == "Nnochi":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Nnochi"
+        elif parcel.LGA == "Obi Ngwa":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Obingwa"
+        elif parcel.LGA == "Ohafia":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Ohafia"
+        elif parcel.LGA == "Osisioma Ngwa":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Osisioma"
+        elif parcel.LGA == "Ugwunagbo":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo"
+        elif parcel.LGA == "Ukwa East":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East"
+        elif parcel.LGA == "Ukwa West":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West"
+        elif parcel.LGA == "Umuahia North":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North"
+        elif parcel.LGA == "Umuahia South":
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South"
         
+
         pdf_file_name = f"{parcel.FileNumber}.pdf"
 
-        pdf_file_path = os.path.join(pdf_directory, pdf_file_name)
+        pdf_file_path = os.path.join(pdf_directory, pdf_file_name.replace('/', ':'))
         
         with open(pdf_file_path, 'wb') as pdf_file:
             pdf_file.write(buffer.getvalue())
@@ -359,7 +393,7 @@ class MyPDFView(View):
         # Set the response content type
         response = HttpResponse(content_type='application/pdf')
         # Set the content disposition for downloading
-        response['Content-Disposition'] = f'attachment; filename="{pdf_file_name}.pdf"'
+        #response['Content-Disposition'] = f'attachment; filename="{pdf_file_name}.pdf"'
         # Write the PDF to the response
         response.write(buffer.getvalue())
 
