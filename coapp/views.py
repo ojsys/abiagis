@@ -5,6 +5,7 @@ from django.views import View
 from django.contrib.auth import get_user_model
 from .models import Parcel, Lines
 import io
+import os
 from io import BytesIO
 from django.http import FileResponse, HttpResponse
 from django.template.loader import get_template
@@ -345,10 +346,20 @@ class MyPDFView(View):
         #pdf.save()
         pdf.build(elements, onFirstPage=lambda canvas, doc: rotate_text(canvas, texttorotate, styles['Normal'], 50, 50, 90))
 
+        pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Abia_North"
+        
+        pdf_file_name = f"{parcel.FileNumber}.pdf"
+
+        pdf_file_path = os.path.join(pdf_directory, pdf_file_name)
+        
+        with open(pdf_file_path, 'wb') as pdf_file:
+            pdf_file.write(buffer.getvalue())
+
+
         # Set the response content type
         response = HttpResponse(content_type='application/pdf')
         # Set the content disposition for downloading
-        response['Content-Disposition'] = f'attachment; filename="{parcel.FileNumber}.pdf"'
+        response['Content-Disposition'] = f'attachment; filename="{pdf_file_name}.pdf"'
         # Write the PDF to the response
         response.write(buffer.getvalue())
 
