@@ -389,6 +389,12 @@ class MyPDFView(View):
         with open(pdf_file_path, 'wb') as pdf_file:
             pdf_file.write(buffer.getvalue())
 
+        #### Merge pdf files
+
+
+        ################################
+
+
 
         # Set the response content type
         response = HttpResponse(content_type='application/pdf')
