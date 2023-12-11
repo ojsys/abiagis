@@ -22,6 +22,9 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 # ---------
+################################
+from PyPDF2 import PdfFileReader, PdfFileWriter
+################################
 from .forms import ParcelSearchForm
 from django.core.paginator import Paginator
 from datetime import datetime
@@ -406,3 +409,97 @@ class MyPDFView(View):
         return response
     
     
+        def merge_pdf_files(input_dir, output_file):
+            pdf_writer = PdfFileWriter()
+
+            # Iterate throught the files in the directory
+            for root, _, files in os.walk(input_dir):
+                for file in files:
+                    if file.endswith('.pdf'):
+                        file_path = os.path.join(root, file)
+                        pdf_reader = PdfFileReader(file_path)
+
+                        # Add each page to the pdf writer
+                        for page_num in range(pdf_reader.numPages):
+                            page = pdf_reader.getPage(page_num)
+                            pdf_writer.addPage(page)
+            
+            # Write the merged pdf to the output file
+            with open(output_file, 'wb') as output_pdf:
+                pdf_writer.write(output_pdf)
+        
+        # Input Directory by LGAs 
+        if parcel.LGA == "Aba North":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Aba_North"
+        elif parcel.LGA == "Aba South":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Aba_South"
+        elif parcel.LGA == "Arochukwu":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu"
+        elif parcel.LGA == "Bende":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Bende"
+        elif parcel.LGA == "Ikwuano":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano"
+        elif parcel.LGA == "Isiala Ngwa North":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North"
+        elif parcel.LGA == "Isiala Ngwa South":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South"
+        elif parcel.LGA == "Isuikwuato":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato"
+        elif parcel.LGA == "Nnochi":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Nnochi"
+        elif parcel.LGA == "Obi Ngwa":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Obingwa"
+        elif parcel.LGA == "Ohafia":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Ohafia"
+        elif parcel.LGA == "Osisioma Ngwa":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Osisioma"
+        elif parcel.LGA == "Ugwunagbo":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo"
+        elif parcel.LGA == "Ukwa East":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East"
+        elif parcel.LGA == "Ukwa West":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West"
+        elif parcel.LGA == "Umuahia North":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North"
+        elif parcel.LGA == "Umuahia South":
+            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South"
+
+        # Output file by LGAs
+        if parcel.LGA == "Aba North":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Aba_North"
+        elif parcel.LGA == "Aba South":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Aba_South"
+        elif parcel.LGA == "Arochukwu":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu"
+        elif parcel.LGA == "Bende":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Bende"
+        elif parcel.LGA == "Ikwuano":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano"
+        elif parcel.LGA == "Isiala Ngwa North":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North"
+        elif parcel.LGA == "Isiala Ngwa South":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South"
+        elif parcel.LGA == "Isuikwuato":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato"
+        elif parcel.LGA == "Nnochi":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Nnochi"
+        elif parcel.LGA == "Obi Ngwa":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Obingwa"
+        elif parcel.LGA == "Ohafia":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Ohafia"
+        elif parcel.LGA == "Osisioma Ngwa":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Osisioma"
+        elif parcel.LGA == "Ugwunagbo":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo"
+        elif parcel.LGA == "Ukwa East":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East"
+        elif parcel.LGA == "Ukwa West":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West"
+        elif parcel.LGA == "Umuahia North":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North"
+        elif parcel.LGA == "Umuahia South":
+            output_file = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South"
+
+
+        # Call the merge function
+        merge_pdf_files(input_dir, output_file)
