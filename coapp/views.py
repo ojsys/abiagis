@@ -23,9 +23,9 @@ from reportlab.lib.units import inch
 from reportlab.lib import colors
 # ---------
 ################################
-from PyPDF2 import PdfFileReader, PdfFileWriter
+from PyPDF2 import PdfReader, PdfWriter, PdfMerger
 ################################
-from .forms import ParcelSearchForm
+from .forms import ParcelSearchForm, MergePDFForm
 from django.core.paginator import Paginator
 from datetime import datetime
 from django.http import HttpResponse
@@ -215,7 +215,11 @@ class MyPDFView(View):
             plan_no_data = Paragraph(plan_no, styles['BodyText'])
             elements.append(plan_no_data)
             elements.append(Spacer(1, 9))
-            
+            #----
+            reg_no = f"<font name = 'Helvetica' size = '13'>REGISTRATION NUMBER: <b>{parcel.R_Particulars}</b></font>"             # Create a paragraph with the data
+            reg_no_data = Paragraph(reg_no, styles['BodyText'])
+            elements.append(reg_no_data)
+            elements.append(Spacer(1, 9))
             #----
             for line in lines:
                 if line.FromBeaconNo == parcel.Starting_Pillar_No:    
@@ -244,31 +248,28 @@ class MyPDFView(View):
             sur_style2.leftIndent = 0
             surveyor_title_data = Paragraph(surveyor_title, sur_style2)
             elements.append(surveyor_title_data)
-            elements.append(Spacer(1, -30))
+            elements.append(Spacer(1, 3))
 
             #----
-            class RotatePara(Paragraph):
+            # class RotatePara(Paragraph):
 
-                def wrap(self, availWidth, availHeight):
-                    height, width = Paragraph.wrap(self, 10, 50)
-                    return width, height
+            #     def wrap(self, availWidth, availHeight):
+            #         height, width = Paragraph.wrap(self, 10, 50)
+            #         return width, height
                 
-                def draw(self):
-                    self.canv.rotate(90)
-                    self.canv.drawString(50, 500, f"{parcel.FileNumber}")
-                    Paragraph.draw(self)
+            #     def draw(self):
+            #         self.canv.rotate(90)
+            #         self.canv.drawString(50, 500, f"{parcel.FileNumber}")
+            #         Paragraph.draw(self)
 
-            file_number = f"<font name='Helvetica' size='11'><b>{parcel.FileNumber} <br/> {parcel.R_Particulars}</b></font>"
-            file_number_style = styles['BodyText_FileNumber']
-            file_number_style.leftIndent = -530
-            #file_number_style.borderColor = '#ff00ff'
-            #file_number_style.borderWidth = 1
-            #file_number_style.borderPadding = (50, 0, 130)
-            file_number_style.leading = 10
+            # file_number = f"<font name='Helvetica' size='11'><b>{parcel.FileNumber} <br/> {parcel.R_Particulars}</b></font>"
+            # file_number_style = styles['BodyText_FileNumber']
+            # file_number_style.leftIndent = -530
+            # file_number_style.leading = 10
             
-            file_number_data = RotatePara(file_number, file_number_style)            
-            elements.append(Spacer(10, 20))
-            elements.append(file_number_data)
+            # file_number_data = RotatePara(file_number, file_number_style)            
+            # elements.append(Spacer(10, 20))
+            # elements.append(file_number_data)
             
             
             
@@ -320,7 +321,7 @@ class MyPDFView(View):
             table.setStyle(table_style)
             elements.append(table)
 
-            elements.append(Spacer(1, 130))
+            elements.append(Spacer(1, 120))
 
 
             logo_path = f'static/images/logo1.png'
@@ -408,98 +409,53 @@ class MyPDFView(View):
 
         return response
     
-    
-        def merge_pdf_files(input_dir, output_file):
-            pdf_writer = PdfFileWriter()
-
-            # Iterate throught the files in the directory
-            for root, _, files in os.walk(input_dir):
-                for file in files:
-                    if file.endswith('.pdf'):
-                        file_path = os.path.join(root, file)
-                        pdf_reader = PdfFileReader(file_path)
-
-                        # Add each page to the pdf writer
-                        for page_num in range(pdf_reader.numPages):
-                            page = pdf_reader.getPage(page_num)
-                            pdf_writer.addPage(page)
             
-            # Write the merged pdf to the output file
-            with open(output_file, 'wb') as output_pdf:
-                pdf_writer.write(output_pdf)
-        
-        # Input Directory by LGAs 
-        if parcel.LGA == "Aba North":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Aba_North"
-        elif parcel.LGA == "Aba South":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Aba_South"
-        elif parcel.LGA == "Arochukwu":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu"
-        elif parcel.LGA == "Bende":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Bende"
-        elif parcel.LGA == "Ikwuano":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano"
-        elif parcel.LGA == "Isiala Ngwa North":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North"
-        elif parcel.LGA == "Isiala Ngwa South":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South"
-        elif parcel.LGA == "Isuikwuato":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato"
-        elif parcel.LGA == "Nnochi":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Nnochi"
-        elif parcel.LGA == "Obi Ngwa":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Obingwa"
-        elif parcel.LGA == "Ohafia":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Ohafia"
-        elif parcel.LGA == "Osisioma Ngwa":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Osisioma"
-        elif parcel.LGA == "Ugwunagbo":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo"
-        elif parcel.LGA == "Ukwa East":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East"
-        elif parcel.LGA == "Ukwa West":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West"
-        elif parcel.LGA == "Umuahia North":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North"
-        elif parcel.LGA == "Umuahia South":
-            input_dir = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South"
+class MergePDFView(View):
+    template_name = 'coapp/mergepdf.html' 
 
-        # Output file by LGAs
-        if parcel.LGA == "Aba North":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Aba_North"
-        elif parcel.LGA == "Aba South":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Aba_South"
-        elif parcel.LGA == "Arochukwu":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu"
-        elif parcel.LGA == "Bende":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Bende"
-        elif parcel.LGA == "Ikwuano":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano"
-        elif parcel.LGA == "Isiala Ngwa North":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North"
-        elif parcel.LGA == "Isiala Ngwa South":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South"
-        elif parcel.LGA == "Isuikwuato":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato"
-        elif parcel.LGA == "Nnochi":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Nnochi"
-        elif parcel.LGA == "Obi Ngwa":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Obingwa"
-        elif parcel.LGA == "Ohafia":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Ohafia"
-        elif parcel.LGA == "Osisioma Ngwa":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Osisioma"
-        elif parcel.LGA == "Ugwunagbo":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo"
-        elif parcel.LGA == "Ukwa East":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East"
-        elif parcel.LGA == "Ukwa West":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West"
-        elif parcel.LGA == "Umuahia North":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North"
-        elif parcel.LGA == "Umuahia South":
-            output_file = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South"
+    def get(self, request, *args, **kwargs):
+        form = MergePDFForm()
+        return render(request, self.template_name, {'form': form, 'title': 'Merge PDF'})
 
+    def post(self, request, *args, **kwargs):
+        form = MergePDFForm(request.POST, request.FILES)
 
-        # Call the merge function
-        merge_pdf_files(input_dir, output_file)
+        if form.is_valid():
+            pdf_file1 = form.cleaned_data['file1']
+            pdf_file2 = form.cleaned_data['file2']
+
+            # Merge PDF files
+            merged_pdf_path = self.merge_pdfs(pdf_file1, pdf_file2)
+
+            # Serve  the merged pdf files as response
+            with open(merged_pdf_path, 'rb') as merged_pdf_file:
+                response = HttpResponse(merged_pdf_file.read(), content_type='application/pdf')
+                response['Content-Disposition'] = 'inline; filename="merged_file.pdf"'
+                return response
+        return render(request, self.template_name, {'form': form, 'title': 'Merge PDF'})
+
+    def merge_pdfs(self, pdf_file1, pdf_file2):
+
+        pdf_writer = PdfWriter()
+
+        # Add the pages from the first pdf file 
+        with open(pdf_file1, 'rb') as file1:
+            pdf_reader1 = PdfReader(file1)
+            for page_num in range(len(pdf_reader1.pages)):
+                page = pdf_reader1.pages[page_num]
+                pdf_writer.add_page(page)
+
+        # Add pages from the second PDF file
+        with open(pdf_file2, 'rb') as file2:
+            pdf_reader2 = PdfReader(file2)
+            for page_num in range(len(pdf_reader2.pages)):
+                page = pdf_reader2.pages[page_num]
+                pdf_writer.add_page(page)
+
+        # Write the merged PDF to the temporary file
+        merged_pdf_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North/merged.pdf"
+        with open(merged_pdf_path, 'wb') as merged_pdf_file:
+            pdf_writer.write(merged_pdf_file)
+
+        return merged_pdf_path
+    
