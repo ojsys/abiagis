@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from .models import Parcel, Lines
 import io
 import os
+import re
 from io import BytesIO
 from django.http import FileResponse, HttpResponse
 from django.template.loader import get_template
@@ -394,9 +395,36 @@ class MyPDFView(View):
             pdf_file.write(buffer.getvalue())
 
         #### Merge pdf files
+        def merge_related_files(directory_path, output_path):
+            #create a dictionary to store the related files
+            pdf_dict = {}
 
+            for filename in os.listdir(directory_path):
+                if filename.endswith(".pdf"):
+                    #extract the common part of the filename (eg. LUM2556A)
+                    match = re.match(r'^([^\d]+)(\d+)([^\d]+)$', filename)
+                    if match:
+                        base_name = match.group(1) + match.group(2) + match.group(3)
+                        pdf_dict.setdefault(base_name, []).append(os.path.join(directory_path, filename))
+
+            # create the pdf merger
+            merger = PdfMerger()
+
+            for base_name, pdf_paths in pdf_dict.items():
+                if len(pdf_paths) > 1:
+                    pdf_paths.sort()
+                    for pdf_path in pdf_paths:
+                        merger.append(pdf_path)
+            
+            # write the merged pdf to the output file
+            merger.write(output_path)
+            merger.close()
 
         ################################
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North/Merged"
+            merge_related_files()
+
 
 
 
