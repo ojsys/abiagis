@@ -401,29 +401,82 @@ class MyPDFView(View):
 
             for filename in os.listdir(directory_path):
                 if filename.endswith(".pdf"):
-                    #extract the common part of the filename (eg. LUM2556A)
-                    match = re.match(r'^([^\d]+)(\d+)([^\d]+)$', filename)
-                    if match:
-                        base_name = match.group(1) + match.group(2) + match.group(3)
-                        pdf_dict.setdefault(base_name, []).append(os.path.join(directory_path, filename))
+                    base_name = ''.join(filter(str.isalpha, filename))
+                    pdf_dict.setdefault(base_name, []).append(os.path.join(directory_path, filename))
 
             # create the pdf merger
             merger = PdfMerger()
-
+            
+            #Merge pdf files with closely related names
             for base_name, pdf_paths in pdf_dict.items():
                 if len(pdf_paths) > 1:
                     pdf_paths.sort()
                     for pdf_path in pdf_paths:
                         merger.append(pdf_path)
+
+                    # Set the merged file name to the base name of one of the original documents
+                    merged_filename = f"{base_name}_merged.pdf"
+                    merged_filepath = os.path.join(output_path, merged_filename)   
+                    merger.write(merged_filepath)
             
-            # write the merged pdf to the output file
-            merger.write(output_path)
-            merger.close()
+                    # Clear the merger for the next set of pdf files
+            
+                    merger.pages = []
 
         ################################
+        if parcel.LGA == "Aba North":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Aba_North"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Aba_North/Merged"
+        elif parcel.LGA == "Aba South":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Aba_South"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Aba_South/Merged"
+        elif parcel.LGA == "Arochukwu":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu/Merged"
+        elif parcel.LGA == "Bende":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Bende"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Bende/Merged"
+        elif parcel.LGA == "Ikwuano":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano/Merged"
+        elif parcel.LGA == "Isiala Ngwa North":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North/Merged"
+        elif parcel.LGA == "Isiala Ngwa South":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South/Merged"
+        elif parcel.LGA == "Isuikwuato":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato/Merged"
+        elif parcel.LGA == "Nnochi":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Nnochi"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Nnochi/Merged"
+        elif parcel.LGA == "Obi Ngwa":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Obi_Ngwa"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Obi_Ngwa/Merged"
+        elif parcel.LGA == "Ohafia":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Ohafia"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Ohafia/Merged"
+        elif parcel.LGA == "Osisioma Ngwa":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Osisioma_Ngwa"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Osisioma_Ngwa/Merged"
+        elif parcel.LGA == "Ugwunagbo":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo/Merged"
+        elif parcel.LGA == "Ukwa East":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East/Merged"
+        elif parcel.LGA == "Ukwa West":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West/Merged"
+        elif parcel.LGA == "Umuahia North":
             directory_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North"
             output_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North/Merged"
-            merge_related_files()
+        elif parcel.LGA == "Umuahia South":
+            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South"
+            output_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South/Merged"
+
+        merge_related_files(directory_path, output_path)
 
 
 
