@@ -174,7 +174,7 @@ class MyPDFView(View):
         # Retrieve data from the database
         pdfmetrics.registerFont(TTFont('Playbill', 'Playbill.ttf'))
         parcels = Parcel.objects.filter(id=parcel_id)
-        lines = Lines.objects.filter(ParcelID_id__in=parcels.values_list('OBJECTID', flat=True))
+        lines = Lines.objects.filter(ParcelID_id__in=parcels.values_list('OBJECTID', flat=True)).order_by('Sequence')
         time = datetime.now().strftime("%I:%M:%S %p, %A, %B %d, %Y")
 
         # Create a buffer to store the PDF
