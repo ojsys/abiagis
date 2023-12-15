@@ -155,20 +155,7 @@ def search_page(request):
         'lines':lines
     }
     return render(request, 'coapp/search_page.html', context)
-
     
-def generate_pdf(request, parcel_id):
-    parcel = Parcel.objects.get(pk=parcel_id)
-    lines = Lines.objects.filter(ParcelID_id=parcel.OBJECTID)
-
-    pdf_file_path_reportlab = "output_reportlab.pdf"
-    pdf_file_path_xhtml2pdf = "output_xhtml2pdf.pdf"
-
-    
-
-    return render(request, 'coapp/generate_pdf.html', {'pdf_file_path_reportlab':pdf_file_path_reportlab, 'pdf_file_path_xhtml2pdf':pdf_file_path_xhtml2pdf})
-
-
 class MyPDFView(View):
     def get(self, request, parcel_id, *args, **kwargs):
         # Retrieve data from the database
@@ -491,52 +478,52 @@ class MyPDFView(View):
         return response
     
             
-class MergePDFView(View):
-    template_name = 'coapp/mergepdf.html' 
+# class MergePDFView(View):
+#     template_name = 'coapp/mergepdf.html' 
 
-    def get(self, request, *args, **kwargs):
-        form = MergePDFForm()
-        return render(request, self.template_name, {'form': form, 'title': 'Merge PDF'})
+#     def get(self, request, *args, **kwargs):
+#         form = MergePDFForm()
+#         return render(request, self.template_name, {'form': form, 'title': 'Merge PDF'})
 
-    def post(self, request, *args, **kwargs):
-        form = MergePDFForm(request.POST, request.FILES)
+#     def post(self, request, *args, **kwargs):
+#         form = MergePDFForm(request.POST, request.FILES)
 
-        if form.is_valid():
-            pdf_file1 = form.cleaned_data['file1']
-            pdf_file2 = form.cleaned_data['file2']
+#         if form.is_valid():
+#             pdf_file1 = form.cleaned_data['file1']
+#             pdf_file2 = form.cleaned_data['file2']
 
-            # Merge PDF files
-            merged_pdf_path = self.merge_pdfs(pdf_file1, pdf_file2)
+#             # Merge PDF files
+#             merged_pdf_path = self.merge_pdfs(pdf_file1, pdf_file2)
 
-            # Serve  the merged pdf files as response
-            with open(merged_pdf_path, 'rb') as merged_pdf_file:
-                response = HttpResponse(merged_pdf_file.read(), content_type='application/pdf')
-                response['Content-Disposition'] = 'inline; filename="merged_file.pdf"'
-                return response
-        return render(request, self.template_name, {'form': form, 'title': 'Merge PDF'})
+#             # Serve  the merged pdf files as response
+#             with open(merged_pdf_path, 'rb') as merged_pdf_file:
+#                 response = HttpResponse(merged_pdf_file.read(), content_type='application/pdf')
+#                 response['Content-Disposition'] = 'inline; filename="merged_file.pdf"'
+#                 return response
+#         return render(request, self.template_name, {'form': form, 'title': 'Merge PDF'})
 
-    def merge_pdfs(self, pdf_file1, pdf_file2):
+#     def merge_pdfs(self, pdf_file1, pdf_file2):
 
-        pdf_writer = PdfWriter()
+#         pdf_writer = PdfWriter()
 
-        # Add the pages from the first pdf file 
-        with open(pdf_file1, 'rb') as file1:
-            pdf_reader1 = PdfReader(file1)
-            for page_num in range(len(pdf_reader1.pages)):
-                page = pdf_reader1.pages[page_num]
-                pdf_writer.add_page(page)
+#         # Add the pages from the first pdf file 
+#         with open(pdf_file1, 'rb') as file1:
+#             pdf_reader1 = PdfReader(file1)
+#             for page_num in range(len(pdf_reader1.pages)):
+#                 page = pdf_reader1.pages[page_num]
+#                 pdf_writer.add_page(page)
 
-        # Add pages from the second PDF file
-        with open(pdf_file2, 'rb') as file2:
-            pdf_reader2 = PdfReader(file2)
-            for page_num in range(len(pdf_reader2.pages)):
-                page = pdf_reader2.pages[page_num]
-                pdf_writer.add_page(page)
+#         # Add pages from the second PDF file
+#         with open(pdf_file2, 'rb') as file2:
+#             pdf_reader2 = PdfReader(file2)
+#             for page_num in range(len(pdf_reader2.pages)):
+#                 page = pdf_reader2.pages[page_num]
+#                 pdf_writer.add_page(page)
 
-        # Write the merged PDF to the temporary file
-        merged_pdf_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North/merged.pdf"
-        with open(merged_pdf_path, 'wb') as merged_pdf_file:
-            pdf_writer.write(merged_pdf_file)
+#         # Write the merged PDF to the temporary file
+#         merged_pdf_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North/merged.pdf"
+#         with open(merged_pdf_path, 'wb') as merged_pdf_file:
+#             pdf_writer.write(merged_pdf_file)
 
-        return merged_pdf_path
+#         return merged_pdf_path
     
