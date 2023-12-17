@@ -332,7 +332,7 @@ class MyPDFView(View):
             # Create the table and apply the style
             table = Table(table_data)
             table.setStyle(table_style)
-            table.splitInRow(10)
+            table.splitOn(pdf, 500, 200)
             elements.append(table)
 
             elements.append(Spacer(1, 120))
@@ -499,6 +499,9 @@ class MyPDFView(View):
 
         return response
     
+
+ #  We need to implement the merging of Documents from separate folders
+ #   
             
 # class MergePDFView(View):
 #     template_name = 'coapp/mergepdf.html' 
