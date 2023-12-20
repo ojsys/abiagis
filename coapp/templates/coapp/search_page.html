@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }} - Search Parcel</title>
-    <link href="{% static 'css/bootstrap.min.css' %}" >
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
   </head>
   <body>
     
@@ -34,7 +34,7 @@
                     <h5>Find a Parcel</h5>
                   </div>
                   {% if message %}
-                    <p class="mt-4 bg-gradient-primary text-white p-3 border-radius-md">{{ message }}</p>
+                    <p class="mt-4 bg-gradient-primary text-white p-3 border-radius-md" style="list-style-type: none !important;">{{ message }}</p>
                   {% endif %}
                   
                   <div class="card-body">
