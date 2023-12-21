@@ -77,8 +77,8 @@
                         <td>{{ parcel.Starting_Pillar_No}}</td>
                         <td>{{ parcel.R_Particulars }}</td>
                         <td>
-                          <a href="{% url 'render_pdf' parcel.id %}">View Parcel</a>
-                          <a href="{% url 'generate_pdf' parcel.id %}">Generate PDF</a>
+                          <a class="btn btn-secondary" href="{% url 'blackcopy' parcel.id %}">Generate BlackCopy</a>
+                          <a class="btn btn-success" href="{% url 'generate_pdf' parcel.id %}">Generate CofO</a>
                         </td>
                             
                       </tr>
