@@ -396,96 +396,132 @@ class MyPDFView(View):
             pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South"
         
 
-        pdf_file_name = f"{parcel.FileNumber}.pdf"
+        pdf_file_name = f"{parcel.Picture}.pdf"
 
-        pdf_file_path = os.path.join(pdf_directory, pdf_file_name.replace('/', ':'))
+        pdf_file_path = os.path.join(pdf_directory, pdf_file_name)
         
         with open(pdf_file_path, 'wb') as pdf_file:
             pdf_file.write(buffer.getvalue())
 
         #### Merge pdf files
-        def merge_pdfs(directory_path, output_path):
-            #create a dictionary to store the related files
-            pdf_dict = {}
+        def merge_pdfs(input_folder1, input_folder2, output_folder):
+            # Get the list of pdf files in the input folder
+            pdf_files1 = [f for f in os.listdir(input_folder1) if f.endswith('.pdf')]
+            pdf_files2 = [f for f in os.listdir(input_folder2) if f.endswith('.pdf')]
 
-            for filename in os.listdir(directory_path):
-                if filename.endswith(".pdf"):
-                    base_name = ''.join(filter(str.isalpha, filename))
-                    pdf_dict.setdefault(base_name, []).append(os.path.join(directory_path, filename))
+            # Create the ouput folder if it doesn't exist
+            os.makedirs(output_folder, exist_ok=True)
 
-            # create the pdf merger
-            merger = PdfMerger()
-            
-            #Merge pdf files with closely related names
-            for base_name, pdf_paths in pdf_dict.items():
-                if len(pdf_paths) > 1:
-                    pdf_paths.sort()
-                    for pdf_path in pdf_paths:
-                        merger.append(pdf_path)
+            # Iterate over the pdf files in the first folder
+            for pdf_file1 in pdf_files1:
+                # Extract the common identifier (e.g., filenumber) from the folder
+                matching_files = [f for f in pdf_files2 if pdf_file1 == f"TDP for {f}"]
 
-                    # Set the merged file name to the base name of one of the original documents
-                    merged_filename = f"{base_name}_merged.pdf"
-                    merged_filepath = os.path.join(output_path, merged_filename)   
-                    merger.write(merged_filepath)
+                # Skip the current iteration if there is no matching files
+                if len(matching_files) == 0:
+                    continue
+
+                # Paths for input and output files
+                input_path1 = os.path.join(input_folder1, pdf_file1)
+                input_path2 = os.path.join(input_folder2, matching_files[0])
+                output_path = os.path.join(output_folder, 'CofO for {}'.format(pdf_file1))
+
+                # Merge the PDF files
+                merge_2_pdfs(input_path1, input_path2, output_path)
+
+        def merge_2_pdfs(input_path1, input_path2, output_path):
+            # Open the input path
+            with open(input_path1, 'rb') as file1, open(input_path2, 'rb') as file2:
+                # Create PDF reader
+                pdf_reader1 = PdfReader(file1)
+                pdf_reader2 = PdfReader(file2)
+
+                pdf_writer = PdfWriter()
+
+                # Add pages from the first pdf
+                for page_num in range(pdf_reader1.numPages):
+                    pdf_writer.addPage(pdf_reader1.getPage(page_num))
+
+                # Add pages from the second pdf
+                for page_num in range(pdf_reader2.numPages):
+                    pdf_writer.addPage(pdf_reader2.getPage(page_num))
+
+                # Write the merged pdf to the output file
+                with open(output_path, 'wb') as output_file:
+                    pdf_writer.write(output_file)
             
-                    # Clear the merger for the next set of pdf files
-            
-                    merger.pages = []
 
         ################################
         if parcel.LGA == "Aba North":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Aba_North"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Aba_North/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Aba_North"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Aba_North/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Aba_North/Merged"
         elif parcel.LGA == "Aba South":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Aba_South"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Aba_South/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Aba_South"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Aba_South/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Aba_South/Merged"
         elif parcel.LGA == "Arochukwu":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Arochukwu/Merged"
         elif parcel.LGA == "Bende":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Bende"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Bende/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Bende"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Bende/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Bende/Merged"
         elif parcel.LGA == "Ikwuano":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Ikwuano/Merged"
         elif parcel.LGA == "Isiala Ngwa North":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_North/Merged"
         elif parcel.LGA == "Isiala Ngwa South":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Isiala_Ngwa_South/Merged"
         elif parcel.LGA == "Isuikwuato":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Isuikwuato/Merged"
         elif parcel.LGA == "Nnochi":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Nnochi"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Nnochi/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Nnochi"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Nnochi/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Nnochi/Merged"
         elif parcel.LGA == "Obi Ngwa":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Obi_Ngwa"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Obi_Ngwa/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Obi_Ngwa"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Obi_Ngwa/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Obi_Ngwa/Merged"
         elif parcel.LGA == "Ohafia":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Ohafia"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Ohafia/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Ohafia"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Ohafia/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Ohafia/Merged"
         elif parcel.LGA == "Osisioma Ngwa":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Osisioma_Ngwa"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Osisioma_Ngwa/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Osisioma_Ngwa"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Osisioma_Ngwa/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Osisioma_Ngwa/Merged"
         elif parcel.LGA == "Ugwunagbo":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Ugwunagbo/Merged"
         elif parcel.LGA == "Ukwa East":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_East/Merged"
         elif parcel.LGA == "Ukwa West":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West/Merged"
         elif parcel.LGA == "Umuahia North":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North/Merged"
         elif parcel.LGA == "Umuahia South":
-            directory_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South"
-            output_path = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South/Merged"
+            input_folder1 = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South"
+            input_folder2 = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South/TDP"
+            output_folder = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South/Merged"
 
-        merge_related_files(directory_path, output_path)
+        merge_pdfs(input_folder1, input_folder2, output_folder)
 
 
 
