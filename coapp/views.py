@@ -391,12 +391,12 @@ class MyPDFView(View):
         elif parcel.LGA == "Ukwa West":
             pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Ukwa_West"
         elif parcel.LGA == "Umuahia North":
-            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North"
+            pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_North/TDP"
         elif parcel.LGA == "Umuahia South":
             pdf_directory = "/Users/mac/Documents/ABIAProject/parcels/Umuahia_South"
         
 
-        pdf_file_name = f"{parcel.Picture}.pdf"
+        pdf_file_name = f"TDP for {parcel.Picture}.pdf"
 
         pdf_file_path = os.path.join(pdf_directory, pdf_file_name)
         
@@ -415,7 +415,7 @@ class MyPDFView(View):
             # Iterate over the pdf files in the first folder
             for pdf_file1 in pdf_files1:
                 # Extract the common identifier (e.g., filenumber) from the folder
-                matching_files = [f for f in pdf_files2 if pdf_file1 == f"TDP for {f}"]
+                matching_files = [f for f in pdf_files2 if f.__contains__(pdf_file1)]
 
                 # Skip the current iteration if there is no matching files
                 if len(matching_files) == 0:
@@ -439,12 +439,12 @@ class MyPDFView(View):
                 pdf_writer = PdfWriter()
 
                 # Add pages from the first pdf
-                for page_num in range(pdf_reader1.numPages):
-                    pdf_writer.addPage(pdf_reader1.getPage(page_num))
+                for page_num in range(len(pdf_reader1.pages)):
+                    pdf_writer.add_page(pdf_reader1.pages[page_num])
 
                 # Add pages from the second pdf
-                for page_num in range(pdf_reader2.numPages):
-                    pdf_writer.addPage(pdf_reader2.getPage(page_num))
+                for page_num in range(len(pdf_reader2.pages)):
+                    pdf_writer.add_page(pdf_reader2.pages[page_num])
 
                 # Write the merged pdf to the output file
                 with open(output_path, 'wb') as output_file:
