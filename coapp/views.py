@@ -404,7 +404,7 @@ class MyPDFView(View):
             pdf_file.write(buffer.getvalue())
 
         #### Merge pdf files
-        def merge_related_files(directory_path, output_path):
+        def merge_pdfs(directory_path, output_path):
             #create a dictionary to store the related files
             pdf_dict = {}
 
