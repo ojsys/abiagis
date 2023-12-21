@@ -573,7 +573,7 @@ class BlackCopyView(View):
             logo_img.hAlign = TA_RIGHT
             logo_img.drawOn(canvas, 555, 2)
             # Watermark
-            watermark = Paragraph("<font name='Helvetica' size='50'><b>BLACKCOPY</b></font>", styles['Normal'])
+            watermark = Paragraph("<font name='Helvetica' size='50' color='#D8D8D8'><b>BLACKCOPY</b></font>", styles['Normal'])
             watermark.wrap(pdf.width, 70)
             watermark.drawOn(canvas, 150, 120)
             canvas.restoreState()
