@@ -43,12 +43,12 @@ class Lines(models.Model):
         return self.ParcelID
 
 
-# class GeneratedBackCopy(models.Model):
-#     FileNo = models.ForeignKey(Parcel, on_delete=models.CASCADE)
-#     is_Generated = models.BooleanField(default=False)
-#     Generated_by = models.CharField(max_length=100)
-#     Generated_date = models.DateField(null=True, blank=True)
+class GeneratedBackCopy(models.Model):
+    FileNo = models.ForeignKey(Parcel, on_delete=models.CASCADE)
+    is_Generated = models.BooleanField(default=False)
+    Generated_by = models.CharField(max_length=100)
+    Generated_date = models.DateField(null=True, blank=True)
 
 
-#     def __str__(self):
-#         return self.FileNo
+    def __str__(self):
+        return self.FileNo
